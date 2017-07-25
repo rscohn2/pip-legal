@@ -1,4 +1,4 @@
 build: build-pip_legal
 
 build-%:
-	pandoc -t latex -s $*.md -o $*.pdf
+	pandoc -t latex -s $*.md -o $*.pdf --latex-engine=xelatex

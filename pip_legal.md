@@ -46,6 +46,61 @@ article](https://en.wikipedia.org/wiki/Python_Package_Index).  PyPi is a
 software repository, consisting of an archive of packages, and a web service
 through which Pip, in particular, can search for and download packages.
 
+## Relevant parts from the GPL
+
+Our questions are about the situations under which we convey one or more
+Python packages that together constitute a violation of the GPL.  Here are
+some terms from the GPL and associated documents that are relevant to these
+issues.
+
+### GPL code run from an interpreter (like Python)
+
+Python is an interpreter.  The Free Software Foundation holds that any
+interpreted program that *uses* GPL code, must itself be released under the
+GPL:
+
+> Another similar and very common case is to provide libraries with the
+> interpreter which are themselves interpreted. For instance, Perl comes with
+> many Perl modules, and a Java implementation comes with many Java classes.
+> These libraries and the programs that call them are always dynamically
+> linked together.
+>
+> A consequence is that if you choose to use GPL'd Perl modules or Java
+> classes in your program, you must release the program in a GPL-compatible
+> way, regardless of the license used in the Perl or Java interpreter that the
+> combined Perl or Java program will run on.
+
+See [GPL and
+interpreters](https://www.gnu.org/licenses/gpl-faq.html#IfInterpreterIsGPL).
+
+### Distribute, propagate, convey
+
+The GPL3 text has the following text:
+
+> To "propagate" a work means to do anything with it that, without permission,
+> would make you directly or secondarily liable for infringement under
+> applicable copyright law, except executing it on a computer or modifying a
+> private copy. Propagation includes copying, distribution (with or without
+> modification), making available to the public, and in some countries other
+> activities as well.
+>
+> To "convey" a work means any kind of propagation that enables other parties
+> to make or receive copies. Mere interaction with a user through a computer
+> network, with no transfer of a copy, is not conveying.
+
+We'll use the term "convey" to cover the case of making Python packages
+publicly available for distribution.
+
+### Aggregates are allowed - what is an aggregate?
+
+The GPL3 specifically allows "aggregates" of GPL and GPL-incompatible software
+-- see the GPL [aggregate FAQ
+entry](https://www.gnu.org/licenses/gpl-faq.html#MereAggregation). From that
+entry: "An 'aggregate' consists of a number of separate programs, distributed
+together".  The question then becomes what is a "separate program".  In the
+FAQ: "If modules are designed to run linked together in a shared address
+space, that almost surely means combining them into one program."
+
 ## Pip installs software from PyPI
 
 The standard use of Pip is to install packages from the command line.
