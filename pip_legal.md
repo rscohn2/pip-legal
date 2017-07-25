@@ -1,7 +1,7 @@
 # Distributing proprietary binaries with Pip / PyPi
 
 Pip (see below) is a command line utility that downloads and installs software
-distribtions (packages) (see below) from the Python Package Index (PyPI)
+distributions (packages) (see below) from the Python Package Index (PyPI)
 website (see below) - a public archive of Python packages.
 
 There are currently no license restrictions on the packages that a user can
@@ -101,7 +101,7 @@ together".  The question then becomes what is a "separate program".  In the
 FAQ: "If modules are designed to run linked together in a shared address
 space, that almost surely means combining them into one program."
 
-We will use the term *composite* for a collection of programs that should b
+We will use the term *composite* for a collection of programs that should be
 considered as one program, in this sense.  Therefore a collection of programs
 may be an *aggregate* or a *composite*.
 
