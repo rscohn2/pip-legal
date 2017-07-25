@@ -101,6 +101,10 @@ together".  The question then becomes what is a "separate program".  In the
 FAQ: "If modules are designed to run linked together in a shared address
 space, that almost surely means combining them into one program."
 
+We will use the term *composite* for a collection of programs that should b
+considered as one program, in this sense.  Therefore a collection of programs
+may be an *aggregate* or a *composite*.
+
 ## Pip installs software from PyPI
 
 The standard use of Pip is to install packages from the command line.
@@ -113,6 +117,10 @@ specification, Pip determines the specification of packages that P depends on
 already has a package matching P-spec, and if not, it runs another download /
 specification check on P-spec, continuing recursively until it has packages
 matching the original specification and all missing dependent packages.
+
+A package is not required to specify all its dependencies - that is up to the
+package author.  For example, package A might depend on package B in order to
+run, but not specify package B in its P-spec.
 
 For example, here is a terminal session where the user asks Pip for the
 [Scipy](https://pypi.python.org/pypi/scipy) package.  The Scipy package
@@ -129,18 +137,23 @@ downloads both Scipy and Numpy, and installs them:
     Installing collected packages: numpy, scipy
     Successfully installed numpy-1.13.1 scipy-0.19.1
 
-## Questions
+We will use the phrase "pip output" to refer to the files that get installed
+on the user's machine after a single call to pip.
+
+## Examples to support the discussion
 
 Imagine a Python package, hosted on PyPI, licensed under the GPL, called
 `gpl_package`.
 
 Imagine another Python package, hosted on PyPI, with a proprietary license,
-called `proprietary_package`.
+called `proprietary_package`.  By "proprietary license" we mean to indicate
+that the license is not [compatible with the
+GPL](https://www.gnu.org/licenses/gpl-faq.html#WhatDoesCompatMean).
 
-Imagine that the user has a Python script they have written themselves, which
-uses both packages.  The script might look like this:
+Imagine another Python package `composite_package` which contains the
+following code:
 
-    # users_script.py
+    # Some code in "composite_package"
     import gpl_package
     import proprietary_package
 
@@ -148,26 +161,75 @@ uses both packages.  The script might look like this:
     processed_data_1 = gpl_package.do_a_gpl_thing(data)
     processed_data_2 = proprietary_package.do_a_non_gpl_thing(processd_data_1)
 
-They then run their script:
+`composite_package` has a GPL-compatible license, such as the MIT license.
 
-    python users_script.py
+## Questions
 
+### Pip install of `gpl_package` with `proprietary package`
 
-* should the set of packages installed in a particular call to Pip be
-  considered a software "distribution" in the GPL sense?
-* should the union of all sets of packages installed by multiple calls to Pip
-  also be considered a software "distribution" in the GPL sense?
+Consider the *pip output* from:
 
-## Examples
+    pip install gpl_package proprietary_package
 
-Imagine a GPL package `gpl_package` available on PyPI.
+By the construction of our example, there is no code in `gpl_package` using
+`proprietary_package`, and there is no code in `proprietary_package` importing
+`gpl_package`.
 
-The package `gpl_package` contains the following Python code, which will run
-whenever the user does (in Python) `>>> import gpl_package`:
+Our assumption is that the pip output constitutes an *aggregate* of
+`gpl_package` and `proprietary_package` (see above) and therefore, this
+installation by pip does not violate the GPL.  Is this assumption correct?
 
-    import numpy
+### Pip install of `composite_package` without dependency resolution
 
-That is, any use of `gpl_package` will also use the `numpy` package.
+Imagine that PyPI hosts `composite_package`, and that the hosted version of
+`composite_package` does not include `gpl_package` in its P-spec (see above).
 
-Imagine that the Numpy package contains proprietary compiled code.  
+In that circumstance:
 
+    pip install composite_package
+
+will install `composite_package` but not `gpl_package`. Here no GPL code has
+been installed, although the pip output cannot be used to do any useful work
+until the user separately installs `gpl_package`.
+
+We assume that the pip install command above does not violate the GPL, because
+it does not convey GPL software.  Is that correct?
+
+### Pip install of `composite_package` with dependency resolution
+
+Imagine that the version of `composite_package` on PyPI does specify
+`gpl_package` in its P-spec. Now the pip output of:
+
+    pip install composite_package
+
+includes the files for `gpl_package` and `proprietary_package` as well as
+`composite_package`.  We assume that this should be considered a "composite"
+install, where `composite_package`, `gpl_package` and `proprietary_package`
+should all be considered part of a single larger program.  In this case, the
+GPL license should be applied to the whole work, and as it cannot (by
+construction) be applied to `proprietary_package`, we assume the output from
+the pip command above will violate the GPL.  Is this correct?
+
+If it is correct, who should be held liable for this violation?
+
+Is it the controllers of the PyPI site, that hosts the package in such a way
+that such an output is possible?  Or the person who uploaded the
+version of `composite_package` that required pip (by default) to download
+`gpl_package` with `composite_package` and `proprietary_package`?
+
+### Two-step pip install of `composite_package` without dependency resolution
+
+Return to the case where `composite_package` does not specify `gpl_package` in
+its P-spec.  Now consider:
+
+    # No installation of "gpl_package"
+    pip install composite_package
+    # Separately install "gpl_package"
+    pip install gpl_package
+
+If we are correct in our assumptions above, neither of the individual commands
+/ pip outputs would violate the GPL when run in isolation.  However, the two
+commands together produce a combined output equivalent to the pip install with
+dependency resolution above.  Does the second of these two commands violate
+the GPL?  Under what circumstances?  For example, what if these two commands
+are run by two different users, or on two different days?
